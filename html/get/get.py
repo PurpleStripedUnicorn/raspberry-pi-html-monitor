@@ -23,6 +23,18 @@ def measure_cpu():
     return [ Measure('cpu_times_total', avg(dat)),
              Measure('cpu_times_cores', dat) ]
 
-dat = measure_cpu()
+# return the RAM usage of all of the system, put into different categories
+def measure_ram():
+    dat = psutil.virtual_memory()
+    return [ Measure('ram_total', dat.total),
+             Measure('ram_available', dat.available),
+             Measure('ram_used', dat.used), 
+             Measure('ram_free', dat.free), 
+             Measure('ram_buffers', dat.buffers), 
+             Measure('ram_cached', dat.cached), 
+             Measure('ram_shared', dat.shared), 
+             Measure('ram_slab', dat.slab) ]
+
+dat = measure_cpu() + measure_ram()
 out = json.dumps([entry.__dict__ for entry in dat], separators=(',', ':'))
 print(out)
