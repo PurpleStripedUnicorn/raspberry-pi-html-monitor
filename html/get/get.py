@@ -24,4 +24,5 @@ def measure_cpu():
              Measure('cpu_times_cores', dat) ]
 
 dat = measure_cpu()
-print(json.dumps([entry.__dict__ for entry in dat]))
+out = json.dumps([entry.__dict__ for entry in dat], separators=(',', ':'))
+print(out)

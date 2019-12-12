@@ -7,4 +7,4 @@
 # prints the output of the 'get.py' script
 $output;
 exec('python3 get.py', $output);
-print($output);
+print($output[0]);

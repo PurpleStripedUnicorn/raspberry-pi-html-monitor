@@ -1,0 +1,43 @@
+<!-- 
+    raw.html
+    This page shows the raw data is comes in from the 'get.py' script, by
+      requesting the 'get/' page
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Raw data | Server monitor</title>
+    <!-- script dependencies -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <style>pre pre { margin: 0 4ch; }</style>
+</head>
+<body>
+
+    <!-- object to display the data in -->
+    <pre></pre>
+
+    <script>
+    // script to request data from 'get/' page
+    $.ajax({
+        url: 'get/',
+        method: 'get',
+        dataType: 'html',
+        success: function (data) {
+            data = data.replace(/\[/g, '[<pre>')
+                       .replace(/\]/g, '</pre>]')
+                       .replace(/\{/g, '{<pre>')
+                       .replace(/\}/g, '</pre>}')
+                       .replace(/,/g, ',\n')
+            $('pre').html(data)
+        },
+        error: function (jqXHR, textStatus, errorthrown) {
+            console.error('Couldn\'t reach get page')
+        }
+    })
+    </script>
+
+</body>
+</html>
