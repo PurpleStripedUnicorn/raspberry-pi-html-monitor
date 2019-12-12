@@ -12,7 +12,13 @@
     <title>Raw data | Server monitor</title>
     <!-- script dependencies -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <style>pre pre { margin: 0 4ch; }</style>
+    <style>
+        body {
+            background: #332c38;
+            color: #e8e8e8;
+        }
+        pre pre { margin: 0 4ch; }
+    </style>
 </head>
 <body>
 
@@ -31,6 +37,7 @@
                        .replace(/\{/g, '{<pre>')
                        .replace(/\}/g, '</pre>}')
                        .replace(/,/g, ',\n')
+                       .replace(/:/g, ': ')
             $('pre').html(data)
         },
         error: function (jqXHR, textStatus, errorthrown) {
