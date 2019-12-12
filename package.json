@@ -7,7 +7,7 @@
         "url": "https://github.com/PurpleStripedUnicorn"
     },
     "dependencies": {
-        "jquery": "git://github.com/jquery/jquery.git",
-        "psutil": "git://github.com/giampaolo/psutil.git"
+        "jquery": "git+https://github.com/jquery/jquery.git",
+        "psutil": "git+https://github.com/giampaolo/psutil.git"
     }
 }
