@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import json
+import os
 import psutil
 import time
 
@@ -54,11 +55,18 @@ def measure_hardware_info ():
             model = model[3] + model[5]
     return [ Measure('model', model) ]
 
+# measure the CPU temperature of the pi
+def measure_temp ():
+    temp = open('/sys/class/thermal/thermal_zone0/temp').readline()
+    temp = float(temp) / 1000
+    return [ Measure('temp_cpu', temp) ]
+
 
 dat = []
 dat += measure_cpu()
 dat += measure_ram()
 dat += measure_time()
 dat += measure_hardware_info()
+dat += measure_temp()
 out = json.dumps([entry.__dict__ for entry in dat], separators=(',', ':'))
 print(out)
