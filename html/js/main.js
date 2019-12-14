@@ -1,4 +1,48 @@
 
+// check if a string is numeric
+function isNumeric (n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+// converts a number to a number with the added SI unit suffix representing
+//   size
+// e.g. to convert to byte size: units(98654, 'B') -> '98.7kB'
+// the significance of the resulting number is always 3
+function units (n, suffix) {
+    // list of all of the possible SI unit suffixes for the size
+    si_up = ['', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y']
+    si_down = ['m', 'μ', 'n', 'p', 'f', 'a', 'z', 'y']
+    // devide/multiply by 1000 until a number between 1 and 1000 is reached,
+    //   this is the resulting number to put before the suffix
+    i = 0
+    for (; n > 1000 && i + 1 < si_up.length; i++) n /= 1000
+    for (; n != 0 && n < 1 && -i < si_down.length; i--) n *= 1000
+    unit = i < 0 ? si_down[-i - 1] : si_up[i]
+    // make sure the significance of the number shown is always 3
+    return n.toFixed(n > 100 ? 0 : n > 10 ? 1 : 2) + unit + suffix
+}
+
+// like units, converts a number to an easier to read number with a suffix
+// this function converts a number of seconds to a string representing time
+// e.g. units_time(100) -> '1m 40s'
+function units_time (n) {
+    // list all of the possible time scales with the amount of seconds they
+    //   represent
+    count = [['y', 31536000], ['d', 86400], ['h', 3600], ['m', 60], ['s', 1]]
+    c = 0
+    out = ''
+    for (i = 0; i < count.length; i++) {
+        if (c < 2 && count[i][1] < n) {
+            out += (String((n - n % count[i][1]) / count[i][1])
+                + count[i][0] + ' ')
+            n %= count[i][1]
+            c++
+        }
+    }
+    // remove the last trailing space
+    return out.substring(0, out.length - 1)
+}
+
 // this variable stores the history of received data via the 'update' function
 data_history = {
     // where the actual history of data is stored
