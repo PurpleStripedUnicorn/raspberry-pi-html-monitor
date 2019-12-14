@@ -68,6 +68,14 @@ def measure_connection ():
     return [ Measure('connection_wlan', wlan.startswith('up')),
              Measure('connection_eth', eth.startswith('up')) ]
 
+# measure the main disk usage
+def measure_disk ():
+    dat = psutil.disk_usage('/')
+    return [ Measure('disk_space_total', dat.total),
+             Measure('disk_space_used', dat.used),
+             Measure('disk_space_free', dat.free),
+             Measure('disk_space_reserved', dat.total - dat.free - dat.used) ]
+
 
 dat = []
 dat += measure_cpu()
@@ -76,5 +84,6 @@ dat += measure_time()
 dat += measure_hardware_info()
 dat += measure_temp()
 dat += measure_connection()
+dat += measure_disk()
 out = json.dumps([entry.__dict__ for entry in dat], separators=(',', ':'))
 print(out)
