@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import json
-import os
 import psutil
 import time
 
@@ -57,9 +56,15 @@ def measure_hardware_info ():
 
 # measure the CPU temperature of the pi
 def measure_temp ():
-    temp = open('/sys/class/thermal/thermal_zone0/temp').readline()
+    temp = open('/sys/class/thermal/thermal_zone0/temp', 'r').readline()
     temp = float(temp) / 1000
     return [ Measure('temp_cpu', temp) ]
+
+def measure_connection ():
+    wlan = open('/sys/class/net/wlan0/operstate', 'r').readline()
+    eth = open('/sys/class/net/eth0/operstate', 'r').readline()
+    return [ Measure('connection_wlan', wlan.startswith('up')),
+             Measure('connection_eth', eth.startswith('up')) ]
 
 
 dat = []
@@ -68,5 +73,6 @@ dat += measure_ram()
 dat += measure_time()
 dat += measure_hardware_info()
 dat += measure_temp()
+dat += measure_connection()
 out = json.dumps([entry.__dict__ for entry in dat], separators=(',', ':'))
 print(out)
