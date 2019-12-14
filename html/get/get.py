@@ -2,6 +2,7 @@
 
 import json
 import psutil
+import time
 
 # object that represents one measurement that has been done
 class Measure:
@@ -35,6 +36,7 @@ def measure_ram():
              Measure('ram_shared', dat.shared), 
              Measure('ram_slab', dat.slab) ]
 
-dat = measure_cpu() + measure_ram()
+tm = [Measure('timestamp', time.time())]
+dat = measure_cpu() + measure_ram() + tm
 out = json.dumps([entry.__dict__ for entry in dat], separators=(',', ':'))
 print(out)
