@@ -81,17 +81,17 @@ function dataset (data) {
                 if (this.data[i].title == title)
                     return this.data[i]
         },
-        // function to check if there is a datapoint in the dataset with the given
-        //   title
+        // function to check if there is a datapoint in the dataset with the
+        //   given title
         has: function (title) {
             for (i = 0; i < this.data.length; i++)
                 if (this.data[i].title == title)
                     return true
             return false
         },
-        // set a datapoint in the dataset with the given title to the given value,
-        //   if there does not exist a datapoint with the given title, a new one
-        //   is created and added to the list of datapoints
+        // set a datapoint in the dataset with the given title to the given
+        //   value, if there does not exist a datapoint with the given title, a
+        //   new one is created and added to the list of datapoints
         // returns the datapoint
         set: function (title, value) {
             for (i = 0; i < this.data.length; i++)
