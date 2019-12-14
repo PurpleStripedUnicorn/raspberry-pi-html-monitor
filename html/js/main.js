@@ -143,11 +143,21 @@ transforms = {
     // input of all of the functions is the title requested and the current 
     //   dataset
     fn: {
+        // return data as a string representing a size in bytes
         datasize: function (title, ds) {
             return units(ds.get(title).value, 'B')
         },
+        // return a percentage, used for CPU usage measurements
         cpu: function (title, ds) {
             return '' + ds.get(title).value.toFixed(0) + '%'
+        },
+        // identity function, just returns value associated to the given title
+        id: function (title, ds) {
+            return '' + ds.get(title) // turns data into string
+        },
+        // return data as a string representing temperature
+        temp: function (title, ds) {
+            return units(ds.get(title).value, '°C')
         }
     },
     // list of (references to) transformation functions
@@ -164,7 +174,11 @@ transforms = {
         { title: 'ram_buffers', fn: 'datasize' },
         { title: 'ram_cached', fn: 'datasize' },
         { title: 'ram_shared', fn: 'datasize' },
-        { title: 'ram_slab', fn: 'datasize' }
+        { title: 'ram_slab', fn: 'datasize' },
+        // Hardware transform functions
+        { title: 'model', fn: 'id' },
+        // Temperature transform functions
+        { title: 'temp_cpu', fn: 'temp' }
     ],
     // get an entry from the list in this object with the given title
     get: function (title) {
