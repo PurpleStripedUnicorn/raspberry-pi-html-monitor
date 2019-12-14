@@ -7,25 +7,27 @@ import time
 # object that represents one measurement that has been done
 class Measure:
 
-    def __init__(self, title, value):
+    def __init__ (self, title, value):
         self.title = title
         self.value = value
 
 # function that calculates the average of a list of numbers
 # input can be either 1 list object or multiple numbers
-def avg(*l):
+def avg (*l):
     if isinstance(l[0], list):
         l = l[0]
     return sum(l) / len(l)
 
 # returns the cpu usage times from last boot as a list of properties
-def measure_cpu():
+def measure_cpu ():
     dat = [entry.system + entry.user for entry in psutil.cpu_times(True)]
     return [ Measure('cpu_times_total', avg(dat)),
              Measure('cpu_times_cores', dat) ]
 
 # return the RAM usage of all of the system, put into different categories
-def measure_ram():
+# these are the same categories as returned by default by psutil on a linux
+#   machine
+def measure_ram ():
     dat = psutil.virtual_memory()
     return [ Measure('ram_total', dat.total),
              Measure('ram_available', dat.available),
@@ -36,7 +38,15 @@ def measure_ram():
              Measure('ram_shared', dat.shared), 
              Measure('ram_slab', dat.slab) ]
 
-tm = [Measure('timestamp', time.time())]
-dat = measure_cpu() + measure_ram() + tm
+# get the current timestamp as a measurement
+def measure_time ():
+    return [ Measure('timestamp', time.time()) ]
+
+
+
+dat = []
+dat += measure_cpu()
+dat += measure_ram()
+dat += measure_time()
 out = json.dumps([entry.__dict__ for entry in dat], separators=(',', ':'))
 print(out)
