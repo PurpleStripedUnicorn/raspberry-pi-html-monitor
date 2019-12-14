@@ -60,6 +60,8 @@ def measure_temp ():
     temp = float(temp) / 1000
     return [ Measure('temp_cpu', temp) ]
 
+# returns measurements based on connection types
+# 2 types are being checked: wifi and ethernet
 def measure_connection ():
     wlan = open('/sys/class/net/wlan0/operstate', 'r').readline()
     eth = open('/sys/class/net/eth0/operstate', 'r').readline()
