@@ -140,57 +140,31 @@ function update () {
 //   dataset as strings
 transforms = {
     // list of transformation functions
-    // each function has a dataset as input, which it uses to find the data it
-    //   needs to do the transform, it can also use completely different data
-    //   from the datapoint requested
+    // input of all of the functions is the title requested and the current 
+    //   dataset
+    fn: {
+        datasize: function (title, ds) {
+            return units(ds.get(title).value, 'B')
+        },
+        cpu: function (title, ds) {
+            return '' + ds.get(title).value.toFixed(0) + '%'
+        }
+    },
+    // list of (references to) transformation functions
+    // these are bridges between the title given and the transformation
+    //   functions that are defined
     list: [
         // CPU transform functions
-        {
-            title: 'cpu_usage_total', f: function (ds) {
-                return '' + ds.get(this.title).value.toFixed(0) + '%'
-            }
-        },
+        { title: 'cpu_usage_total', fn: 'cpu' },
         // RAM transform functions
-        {
-            title: 'ram_total', f: function (ds) {
-                return units(ds.get(this.title).value, 'B')
-            }
-        },
-        {
-            title: 'ram_available', f: function (ds) {
-                return units(ds.get(this.title).value, 'B')
-            }
-        },
-        {
-            title: 'ram_used', f: function (ds) {
-                return units(ds.get(this.title).value, 'B')
-            }
-        },
-        {
-            title: 'ram_free', f: function (ds) {
-                return units(ds.get(this.title).value, 'B')
-            }
-        },
-        {
-            title: 'ram_buffers', f: function (ds) {
-                return units(ds.get(this.title).value, 'B')
-            }
-        },
-        {
-            title: 'ram_cached', f: function (ds) {
-                return units(ds.get(this.title).value, 'B')
-            }
-        },
-        {
-            title: 'ram_shared', f: function (ds) {
-                return units(ds.get(this.title).value, 'B')
-            }
-        },
-        {
-            title: 'ram_slab', f: function (ds) {
-                return units(ds.get(this.title).value, 'B')
-            }
-        }
+        { title: 'ram_total', fn: 'datasize' },
+        { title: 'ram_available', fn: 'datasize' },
+        { title: 'ram_used', fn: 'datasize' },
+        { title: 'ram_free', fn: 'datasize' },
+        { title: 'ram_buffers', fn: 'datasize' },
+        { title: 'ram_cached', fn: 'datasize' },
+        { title: 'ram_shared', fn: 'datasize' },
+        { title: 'ram_slab', fn: 'datasize' }
     ],
     // get an entry from the list in this object with the given title
     get: function (title) {
@@ -206,7 +180,7 @@ transforms = {
     transform: function (title, ds) {
         for (i = 0; i < this.list.length; i++)
             if (this.list[i].title == title)
-                return this.list[i].f(ds)
+                return this.fn[this.list[i].fn](title, ds)
         console.error(`transform item with the name "` + title + `" cannot `
             + `be found`)
     }
