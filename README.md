@@ -2,7 +2,8 @@
 A basic monitor to see statistics and metrics of the raspberry pi.
 
 ## Requirements
-Required for this application to work are `apache2`, `php` and `python3`.
+Required for this application to work are `apache2`, `php`, `python3` snd the
+python module `psutil`.
 
 ## Security notes
 Please protect the folder you are putting this application in. This can be done
