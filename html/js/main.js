@@ -144,8 +144,53 @@ transforms = {
     //   needs to do the transform, it can also use completely different data
     //   from the datapoint requested
     list: [
-        { title: 'cpu_usage_total', f: function (ds) {
-            return '' + ds.get(this.title).value.toFixed(0) + '%' } }
+        // CPU transform functions
+        {
+            title: 'cpu_usage_total', f: function (ds) {
+                return '' + ds.get(this.title).value.toFixed(0) + '%'
+            }
+        },
+        // RAM transform functions
+        {
+            title: 'ram_total', f: function (ds) {
+                return units(ds.get(this.title).value, 'B')
+            }
+        },
+        {
+            title: 'ram_available', f: function (ds) {
+                return units(ds.get(this.title).value, 'B')
+            }
+        },
+        {
+            title: 'ram_used', f: function (ds) {
+                return units(ds.get(this.title).value, 'B')
+            }
+        },
+        {
+            title: 'ram_free', f: function (ds) {
+                return units(ds.get(this.title).value, 'B')
+            }
+        },
+        {
+            title: 'ram_buffers', f: function (ds) {
+                return units(ds.get(this.title).value, 'B')
+            }
+        },
+        {
+            title: 'ram_cached', f: function (ds) {
+                return units(ds.get(this.title).value, 'B')
+            }
+        },
+        {
+            title: 'ram_shared', f: function (ds) {
+                return units(ds.get(this.title).value, 'B')
+            }
+        },
+        {
+            title: 'ram_slab', f: function (ds) {
+                return units(ds.get(this.title).value, 'B')
+            }
+        }
     ],
     // get an entry from the list in this object with the given title
     get: function (title) {
