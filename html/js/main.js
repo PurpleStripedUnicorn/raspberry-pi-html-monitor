@@ -1,7 +1,7 @@
 
 // check if a string is numeric
 function isNumeric (n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
+    return !isNaN(parseFloat(n)) && isFinite(n)
 }
 
 // converts a number to a number with the added SI unit suffix representing
