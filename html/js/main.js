@@ -158,6 +158,11 @@ transforms = {
         // return data as a string representing temperature
         temp: function (title, ds) {
             return units(ds.get(title).value, '°C')
+        },
+        // returns data 'on' when boolean true and 'off' otherwise, this is used
+        //   for the connection measurement
+        connection: function (title, ds) {
+            return ds.get(title).value ? 'on' : 'off'
         }
     },
     // list of (references to) transformation functions
@@ -178,7 +183,15 @@ transforms = {
         // Hardware transform functions
         { title: 'model', fn: 'id' },
         // Temperature transform functions
-        { title: 'temp_cpu', fn: 'temp' }
+        { title: 'temp_cpu', fn: 'temp' },
+        // Connection transform functions
+        { title: 'connection_wlan', fn: 'connection' },
+        { title: 'connection_eth', fn: 'connection' },
+        // Disk usage transform functions
+        { title: 'disk_space_total', fn: 'datasize' },
+        { title: 'disk_space_used', fn: 'datasize' },
+        { title: 'disk_space_free', fn: 'datasize' },
+        { title: 'disk_space_reserved', fn: 'datasize' }
     ],
     // get an entry from the list in this object with the given title
     get: function (title) {
