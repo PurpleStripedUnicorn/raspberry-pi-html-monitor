@@ -42,11 +42,23 @@ def measure_ram ():
 def measure_time ():
     return [ Measure('timestamp', time.time()) ]
 
+# get hardware information of the raspberry pi
+def measure_hardware_info ():
+    f = open('/proc/cpuinfo', 'r')
+    model = 'N/A'
+    for line in f.readlines():
+        if line.startswith('Model\t'):
+            model = line.replace('Model\t', '')
+            model = model.replace('\t', '')
+            model = model.split(' ')
+            model = model[3] + model[5]
+    return [ Measure('model', model) ]
 
 
 dat = []
 dat += measure_cpu()
 dat += measure_ram()
 dat += measure_time()
+dat += measure_hardware_info()
 out = json.dumps([entry.__dict__ for entry in dat], separators=(',', ':'))
 print(out)
