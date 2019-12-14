@@ -152,8 +152,8 @@ transforms = {
         for (i = 0; i < this.list.length; i++)
             if (this.list[i].title == title)
                 return list[i]
-        console.error(`transform item with the name "` + title + `" cannot
-            be found`)
+        console.error(`transform item with the name "` + title + `" cannot `
+            + `be found`)
     },
     // apply transform function to an item in the given dataset with the given
     //   title
@@ -162,6 +162,8 @@ transforms = {
         for (i = 0; i < this.list.length; i++)
             if (this.list[i].title == title)
                 return this.list[i].f(ds)
+        console.error(`transform item with the name "` + title + `" cannot `
+            + `be found`)
     }
 }
 
