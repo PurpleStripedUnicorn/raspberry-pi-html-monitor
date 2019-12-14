@@ -69,6 +69,8 @@ def measure_connection ():
              Measure('connection_eth', eth.startswith('up')) ]
 
 # measure the main disk usage
+# this measurement is devided into 3 groups: 'used', 'free' and 'reserved',
+#   these combined form the 'total' measurement
 def measure_disk ():
     dat = psutil.disk_usage('/')
     return [ Measure('disk_space_total', dat.total),
