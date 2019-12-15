@@ -131,10 +131,14 @@ function update () {
         ds = process_update(dataset(data))
         data_history.push(ds)
         update_fields(ds)
+        // set timer for next update
+        setTimeout(update, 500)
     }, function (jqXHR, textStatus, errorThrown) {
 
     })
 }
+// run the update function as soon as the document is loaded
+$(function () { update() })
 
 // object with all of the transformation functions for displaying the data in a
 //   dataset as strings
