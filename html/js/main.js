@@ -4,11 +4,18 @@ function isNumeric (n) {
     return !isNaN(parseFloat(n)) && isFinite(n)
 }
 
+// return the minimum of 2 numbers
+function min (a, b) {
+    return a > b ? b : a
+}
+
 // converts a number to a number with the added SI unit suffix representing
 //   size
 // e.g. to convert to byte size: units(98654, 'B') -> '98.7kB'
-// the significance of the resulting number is always 3
-function units (n, suffix) {
+// the significance of the resulting number is always 3, unless other value is
+//   given, if the significance of the number is lower than the number of digits
+//   in the result, then the significance is ignored
+function units (n, suffix, sig) {
     // list of all of the possible SI unit suffixes for the size
     si_up = ['', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y']
     si_down = ['m', 'μ', 'n', 'p', 'f', 'a', 'z', 'y']
@@ -18,8 +25,16 @@ function units (n, suffix) {
     for (; n > 1000 && i + 1 < si_up.length; i++) n /= 1000
     for (; n != 0 && n < 1 && -i < si_down.length; i--) n *= 1000
     unit = i < 0 ? si_down[-i - 1] : si_up[i]
-    // make sure the significance of the number shown is always 3
-    return n.toFixed(n > 100 ? 0 : n > 10 ? 1 : 2) + unit + suffix
+    // determine the significance of the result
+    if (typeof sig == 'undefined')
+        sig = 3
+    // make sure the significance of the number shown is always 3, unless
+    //   instructed otherwise
+    // first, determine the number of digits shown after the decimal dot
+    digits = n > 100 ? min(0, sig-3) : n > 10 ? min(1, sig-2) : min(2, sig-1)
+    if (digits < 0)
+        digits = 0
+    return n.toFixed(digits) + unit + suffix
 }
 
 // like units, converts a number to an easier to read number with a suffix
@@ -161,7 +176,7 @@ transforms = {
         },
         // return data as a string representing temperature
         temp: function (title, ds) {
-            return units(ds.get(title).value, '°C')
+            return units(ds.get(title).value, '°C', 2)
         },
         // returns data 'on' when boolean true and 'off' otherwise, this is used
         //   for the connection measurement
