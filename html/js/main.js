@@ -172,7 +172,7 @@ transforms = {
         },
         // identity function, just returns value associated to the given title
         id: function (title, ds) {
-            return '' + ds.get(title) // turns data into string
+            return '' + ds.get(title).value // turns data into string
         },
         // return data as a string representing temperature
         temp: function (title, ds) {
