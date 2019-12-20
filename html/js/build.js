@@ -12,7 +12,8 @@ function block (title, statname) {
             return `<div class="block">
                         <h2 class="top">` + title + `</h2>
                         <div class="body">
-                            <div class="big_stat" data-out="` + statname + `">
+                            <div class="big_stat">
+                                <span data-out="` + statname + `"></span>
                             </div>
                         </div>
                     </div>`
