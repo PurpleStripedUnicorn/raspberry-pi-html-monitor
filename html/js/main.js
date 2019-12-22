@@ -63,9 +63,7 @@ data_history = {
     // where the actual history of data is stored
     history: [],
     // get the last received data
-    last: function () {
-        return this.history[this.history.length - 1]
-    },
+    last: function () { return this.history[this.history.length - 1] },
     // append a new dataset to the history
     push: function (ds) { this.history.push(ds) },
     length: function () { return this.history.length },
