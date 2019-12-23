@@ -83,17 +83,26 @@ function get (success, error) {
              dataType: 'json' })
 }
 
+// datapoint object, returned when using the dataset "get" method
+function datapoint (dataset, title) {
+    for (i = 0; i < dataset.data.length; i++)
+        if (dataset.data[i].title == title)
+            value = dataset.data[i].value
+    if (value == 'undefined')
+        console.error('Cannot find object with title "' + title + '"')
+    return {
+        title: title,
+        value: value
+    }
+}
+
 // make from the given data a dataset object
 function dataset (data) {
     return {
         data: data,
         // function to get a certain datapoint in the dataset with the given
         //   title
-        get: function (title) {
-            for (i = 0; i < this.data.length; i++)
-                if (this.data[i].title == title)
-                    return this.data[i]
-        },
+        get: function (title) { return datapoint(this, title) },
         // function to check if there is a datapoint in the dataset with the
         //   given title
         has: function (title) {
