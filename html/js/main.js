@@ -172,9 +172,55 @@ function displayset () {
     data.push(tmp)
     // RAM availability/usage
     data.push({
+        title: 'ram_total',
+        value: cur.get('ram_total').value,
+        displayvalue: function () { return units(this.value, 'B') }
+    })
+    data.push({
         title: 'ram_available',
         value: cur.get('ram_available').value,
         displayvalue: function () { return units(this.value, 'B') }
+    })
+    data.push({
+        title: 'ram_used',
+        value: cur.get('ram_used').value,
+        displayvalue: function () { return units(this.value, 'B') }
+    })
+    data.push({
+        title: 'ram_free',
+        value: cur.get('ram_free').value,
+        displayvalue: function () { return units(this.value, 'B') }
+    })
+    data.push({
+        title: 'ram_buffers',
+        value: cur.get('ram_buffers').value,
+        displayvalue: function () { return units(this.value, 'B') }
+    })
+    data.push({
+        title: 'ram_cached',
+        value: cur.get('ram_cached').value,
+        displayvalue: function () { return units(this.value, 'B') }
+    })
+    data.push({
+        title: 'ram_shared',
+        value: cur.get('ram_shared').value,
+        displayvalue: function () { return units(this.value, 'B') }
+    })
+    data.push({
+        title: 'ram_slab',
+        value: cur.get('ram_slab').value,
+        displayvalue: function () { return units(this.value, 'B') }
+    })
+    // Connection type
+    data.push({
+        title: 'connection_wlan',
+        value: cur.get('connection_wlan').value,
+        displayvalue: function () { return this.value ? 'on' : 'off' }
+    })
+    data.push({
+        title: 'connection_eth',
+        value: cur.get('connection_eth').value,
+        displayvalue: function () { return this.value ? 'on' : 'off' }
     })
     // CPU temperature
     data.push({
@@ -190,8 +236,23 @@ function displayset () {
     })
     // Disk space availability
     data.push({
+        title: 'disk_space_total',
+        value: cur.get('disk_space_total').value,
+        displayvalue: function () { return units(this.value, 'B') }
+    })
+    data.push({
+        title: 'disk_space_used',
+        value: cur.get('disk_space_used').value,
+        displayvalue: function () { return units(this.value, 'B') }
+    })
+    data.push({
         title: 'disk_space_free',
         value: cur.get('disk_space_free').value,
+        displayvalue: function () { return units(this.value, 'B') }
+    })
+    data.push({
+        title: 'disk_space_reserved',
+        value: cur.get('disk_space_reserved').value,
         displayvalue: function () { return units(this.value, 'B') }
     })
     return {
