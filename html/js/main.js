@@ -62,8 +62,13 @@ function units_time (n) {
 data_history = {
     // where the actual history of data is stored
     history: [],
-    // get the last received data
-    last: function () { return this.history[this.history.length - 1] },
+    // get the last received data, if a number is given, the nth last entry is
+    //   returned
+    last: function (n) {
+        if (typeof n == 'undefined')
+            n = 1
+        return this.history[this.history.length - n]
+    },
     // append a new dataset to the history
     push: function (ds) { this.history.push(ds) },
     length: function () { return this.history.length },
@@ -143,6 +148,71 @@ function process_update (ds) {
     return ds
 }
 
+// create a displayset object
+// this object is used to update all of the fields with the desired formats of
+//   the data
+function displayset () {
+    cur = data_history.last(1)
+    has_last = data_history.length() >= 2
+    if (data_history.length() >= 2)
+        last = data_history.last(2)
+    data = []
+    // CPU usage
+    tmp = {
+        title: 'cpu_usage_total',
+        value: 0,
+        displayvalue: function () { return units(this.value, '%', 0) }
+    }
+    if (has_last) {
+        time_diff = cur.get('timestamp').value - last.get('timestamp').value
+        cpu_diff = cur.get('cpu_times_total').value - 
+            last.get('cpu_times_total').value
+        tmp.value = cpu_diff / time_diff * 100 // 100 is for percentage
+    }
+    data.push(tmp)
+    // RAM availability/usage
+    data.push({
+        title: 'ram_available',
+        value: cur.get('ram_available').value,
+        displayvalue: function () { return units(this.value, 'B') }
+    })
+    // CPU temperature
+    data.push({
+        title: 'temp_cpu',
+        value: cur.get('temp_cpu').value,
+        displayvalue: function () { return units(this.value, '°C', 1) }
+    })
+    // Raspberry Pi model
+    data.push({
+        title: 'model',
+        value: cur.get('model').value,
+        displayvalue: function () { return this.value }
+    })
+    // Disk space availability
+    data.push({
+        title: 'disk_space_free',
+        value: cur.get('disk_space_free').value,
+        displayvalue: function () { return units(this.value, 'B') }
+    })
+    return {
+        data: data,
+        // get an try with the given title
+        get: function (title) {
+            for (i = 0; i < this.data.length; i++)
+                if (this.data[i].title == title)
+                    return this.data[i]
+            console.error('Could\'t find entry in displayset object with ' +
+                          'title "' + title + '"')
+        },
+        update_fields: function () {
+            dps = this
+            $('[data-out]').each(function () {
+                update_field($(this), dps)
+            })
+        }
+    }
+}
+
 // get the data from the 'get.py' file and calculate and add some more entries
 // e.g. the percentage of CPU usage since the last received data from this
 //   function
@@ -150,9 +220,13 @@ function process_update (ds) {
 //   variable
 function update () {
     get(function (data) {
-        ds = process_update(dataset(data))
+        ds = dataset(data)
+        // add the current dataset to dataset history
         data_history.push(ds)
-        update_fields(ds)
+        // create new displayset object and update all of the fields with this
+        // the displayset uses the global data_history variable
+        dps = displayset()
+        dps.update_fields()
         // set timer for next update
         setTimeout(update, 500)
     }, function (jqXHR, textStatus, errorThrown) {
@@ -239,10 +313,8 @@ transforms = {
     }
 }
 
-// update the fields with attributes like "data-out=xxx" with the desired data
-function update_fields (ds) {
-    $('[data-out]').each(function () {
-        attr = $(this).attr('data-out')
-        $(this).html(transforms.transform(attr, ds))
-    })
+// update a single field
+// inputs are the object and the displayset to gather data from
+function update_field (obj, dps) {
+    $(obj).html(dps.get($(obj).attr('data-out')).displayvalue())
 }
