@@ -257,7 +257,7 @@ function displayset () {
     })
     return {
         data: data,
-        // get an try with the given title
+        // get an entry with the given title
         get: function (title) {
             for (i = 0; i < this.data.length; i++)
                 if (this.data[i].title == title)
