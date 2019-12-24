@@ -290,8 +290,6 @@ function update () {
         dps.update_fields()
         // set timer for next update
         setTimeout(update, 500)
-    }, function (jqXHR, textStatus, errorThrown) {
-
     })
 }
 // run the update function as soon as the document is loaded
