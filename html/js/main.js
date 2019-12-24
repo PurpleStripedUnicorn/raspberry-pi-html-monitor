@@ -222,6 +222,12 @@ function displayset () {
         value: cur.get('connection_eth').value,
         displayvalue: function () { return this.value ? 'on' : 'off' }
     })
+    data.push({
+        title: 'connection_type',
+        value: cur.get('connection_wlan').value ? 'wlan' : (
+            cur.get('connection_eth') ? 'ethernet' : 'off'),
+        displayvalue: function () { return this.value }
+    })
     // CPU temperature
     data.push({
         title: 'temp_cpu',
