@@ -32,7 +32,8 @@ function build_blocks () {
         block('CPU temperature', 'temp_cpu'),
         block('Rasberry Pi model', 'model'),
         block('Disk space free', 'disk_space_free'),
-        block('Connection type', 'connection_type')
+        block('Connection type', 'connection_type'),
+        block('Time since last boot', 'time_boot_ago')
     ]
     for (i = 0; i < blocks.length; i++)
         container.append(blocks[i].html())

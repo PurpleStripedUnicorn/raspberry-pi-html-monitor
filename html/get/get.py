@@ -78,6 +78,10 @@ def measure_disk ():
              Measure('disk_space_free', dat.free),
              Measure('disk_space_reserved', dat.total - dat.free - dat.used) ]
 
+# calculate when the last startup was
+def measure_boot ():
+    return [ Measure('time_boot', psutil.boot_time()) ]
+
 
 dat = []
 dat += measure_cpu()
@@ -87,5 +91,6 @@ dat += measure_hardware_info()
 dat += measure_temp()
 dat += measure_connection()
 dat += measure_disk()
+dat += measure_boot()
 out = json.dumps([entry.__dict__ for entry in dat], separators=(',', ':'))
 print(out)

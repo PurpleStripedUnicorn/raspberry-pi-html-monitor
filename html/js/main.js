@@ -261,6 +261,12 @@ function displayset () {
         value: cur.get('disk_space_reserved').value,
         displayvalue: function () { return units(this.value, 'B') }
     })
+    // Time since last startup of the pi
+    data.push({
+        title: 'time_boot_ago',
+        value: cur.get('timestamp').value - cur.get('time_boot').value,
+        displayvalue: function () { return units_time(this.value) }
+    })
     return {
         data: data,
         // get an entry with the given title
