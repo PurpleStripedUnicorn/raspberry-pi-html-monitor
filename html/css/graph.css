@@ -6,10 +6,8 @@
 }
 .graph_object path {
     fill: none;
-    stroke: blue;
 }
 .graph_object circle {
-    fill: blue;
     stroke: none;
     stroke-width: 0;
 }
