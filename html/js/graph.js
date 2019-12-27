@@ -23,6 +23,8 @@ function graph (parent, max, min) {
     //   resulting object
     htmlref = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
     htmlref.setAttribute('class', 'graph_object')
+    htmlref.style.width = '100%'
+    htmlref.style.height = '100%'
     parent.append(htmlref)
     return {
         // stores all of the entries of the graph, from left to right, in the 
@@ -30,9 +32,12 @@ function graph (parent, max, min) {
         entries: [],
         // amount of space to leave between entries in the graph (in px)
         entry_width: 10,
-        colors: { // default colors
-            line: 'rgb(139, 140, 224)',
-            under: 'rgba(139, 140, 224, 0.3)'
+        style: { // default values
+            linewidth: 3,
+            dots: false,
+            linecolor: 'rgb(139, 140, 224)',
+            undercolor: 'rgba(139, 140, 224, 0.3)',
+            background: '#f3f3f3'
         },
         // maximum value (top) of the graph
         max: max,
@@ -63,19 +68,26 @@ function graph (parent, max, min) {
                 d += 'L ' + (w - this.entry_width * (this.length() - i - 1)) + 
                      ' ' + (h - (this.entries[i].value - min) / (max - min) * h) 
                      + ' '
-            htm += '<path d="' + d + '" style="stroke: ' + this.colors.line + 
-                   '" />'
+            htm += '<path d="' + d + '" style="stroke: ' + this.style.linecolor
+                   + '; stroke-width: ' + this.style.linewidth 
+                   + '; fill: none" />'
             // render circles to make lines smoother
+            r = this.style.linewidth * 0.5
+            if (this.style.dots)
+                r *= 2
             for (i = 0; i < this.length(); i++)
                 htm += '<circle cx="' + (w - this.entry_width * (this.length() - 
                        i - 1)) + '" cy="' + (h - (this.entries[i].value - min) /
-                       (max - min) * h) + '" r="1.5" style="fill: ' +
-                       this.colors.line + '" />'
+                       (max - min) * h) + '" r="' + r + '" style="fill: ' +
+                       this.style.linecolor + '" />'
             // render color under the graph line
             du = d + 'L ' + w + ' ' + h + ' Z'
             htm += '<path d="' + du + '" style="stroke: transparent; fill: ' +
-                   this.colors.under + '" />'
+                   this.style.undercolor + '" />'
             $(this.htmlref).html(htm)
+            // apply styling settings
+            this.htmlref.style.strokeWidth = '' + this.style.linewidth + 'px'
+            this.htmlref.style.background = this.style.background
         },
         // add an entry to the list of entries
         push: function (entry) {
