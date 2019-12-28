@@ -98,7 +98,7 @@ function graph (parent, max, min) {
             var hloc
             for (var i = 0; i < this.markers.length; i++) {
                 // calculate the y location of the line
-                hloc = this.markers[i].value / max * h
+                hloc = (1 - this.markers[i].value / max) * h
                 // render the line
                 htm += '<path d="M 0 ' + hloc + ' L ' + w + ' ' + hloc +
                        '" style="stroke: #ccc; fill: none; stroke-width: ' +
