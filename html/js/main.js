@@ -17,15 +17,16 @@ function min (a, b) {
 //   in the result, then the significance is ignored
 function units (n, suffix, sig) {
     // list of all of the possible SI unit suffixes for the size
-    si_up = ['', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y']
-    si_down = ['m', 'μ', 'n', 'p', 'f', 'a', 'z', 'y']
+    var si_up = ['', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y']
+    var si_down = ['m', 'μ', 'n', 'p', 'f', 'a', 'z', 'y']
     // devide/multiply by 1000 until a number between 1 and 1000 is reached,
     //   this is the resulting number to put before the suffix
-    i = 0
+    var i = 0
     for (; n > 1000 && i + 1 < si_up.length; i++) n /= 1000
     for (; n != 0 && n < 1 && -i < si_down.length; i--) n *= 1000
-    unit = i < 0 ? si_down[-i - 1] : si_up[i]
+    var unit = i < 0 ? si_down[-i - 1] : si_up[i]
     // determine the significance of the result
+    var sig, digits
     if (typeof sig == 'undefined')
         sig = 3
     // make sure the significance of the number shown is always 3, unless
@@ -43,10 +44,11 @@ function units (n, suffix, sig) {
 function units_time (n) {
     // list all of the possible time scales with the amount of seconds they
     //   represent
+    var count, c, out
     count = [['y', 31536000], ['d', 86400], ['h', 3600], ['m', 60], ['s', 1]]
     c = 0
     out = ''
-    for (i = 0; i < count.length; i++) {
+    for (var i = 0; i < count.length; i++) {
         if (c < 2 && count[i][1] < n) {
             out += (String((n - n % count[i][1]) / count[i][1])
                 + count[i][0] + ' ')
@@ -75,6 +77,23 @@ data_history = {
     isempty: function () { return this.length() == 0 }
 }
 
+// this variable stores the history of received data via the 'displayset'
+//   function
+display_history = {
+    // where the actual history is stored
+    history: [],
+    // append a new displayset to the history
+    push: function (dps) { this.history.push(dps) },
+    length: function () { return this.history.length },
+    // return an array of values from the given datapoint title
+    value_list: function (title) {
+        values = []
+        for (var i = 0; i < this.history.length; i++)
+            values.push(this.history[i].get(title).value)
+        return values
+    }
+}
+
 // get the data from the 'get.py' script by requesting the 'get/' page
 // this data is automatically converted from JSON to a js object
 // inputs are the success and error functions run when the request finishes
@@ -90,7 +109,8 @@ function get (success, error) {
 
 // datapoint object, returned when using the dataset "get" method
 function datapoint (dataset, title) {
-    for (i = 0; i < dataset.data.length; i++)
+    var value
+    for (var i = 0; i < dataset.data.length; i++)
         if (dataset.data[i].title == title)
             value = dataset.data[i].value
     if (value == 'undefined')
@@ -111,7 +131,7 @@ function dataset (data) {
         // function to check if there is a datapoint in the dataset with the
         //   given title
         has: function (title) {
-            for (i = 0; i < this.data.length; i++)
+            for (var i = 0; i < this.data.length; i++)
                 if (this.data[i].title == title)
                     return true
             return false
@@ -121,7 +141,7 @@ function dataset (data) {
         //   new one is created and added to the list of datapoints
         // returns the datapoint
         set: function (title, value) {
-            for (i = 0; i < this.data.length; i++)
+            for (var i = 0; i < this.data.length; i++)
                 if (this.data[i].title == title) {
                     this.data[i].value = value
                     return obj.data[i]
@@ -136,10 +156,12 @@ function dataset (data) {
 //   dataset
 function process_update (ds) {
     // check if there is an dataset item of the last received data
+    var prev
     if (!data_history.isempty())
         prev = data_history.last()
     else prev = false
     // add percentage of CPU usage since last received data
+    var dx, dt
     if (prev) {
         dx = ds.get('cpu_times_total').value - prev.get('cpu_times_total').value
         dt = ds.get('timestamp').value - prev.get('timestamp').value
@@ -152,12 +174,14 @@ function process_update (ds) {
 // this object is used to update all of the fields with the desired formats of
 //   the data
 function displayset () {
-    cur = data_history.last(1)
-    has_last = data_history.length() >= 2
+    var cur = data_history.last(1)
+    var has_last = data_history.length() >= 2
+    var last
     if (data_history.length() >= 2)
         last = data_history.last(2)
-    data = []
+    var data = []
     // CPU usage
+    var tmp, time_diff, cpu_diff
     tmp = {
         title: 'cpu_usage_total',
         value: 0,
@@ -265,20 +289,28 @@ function displayset () {
         data: data,
         // get an entry with the given title
         get: function (title) {
-            for (i = 0; i < this.data.length; i++)
+            for (var i = 0; i < this.data.length; i++)
                 if (this.data[i].title == title)
                     return this.data[i]
             console.error('Could\'t find entry in displayset object with ' +
                           'title "' + title + '"')
         },
         update_fields: function () {
-            dps = this
+            var dps = this
             $('[data-out]').each(function () {
                 update_field($(this), dps)
             })
         }
     }
 }
+
+// make the graphs variable global so it cn be used inside the update function
+graphs = []
+// as soon as the document is loaded, fill the graphs variable by using the
+//   associate_graphs function
+$(function () {
+    graphs = associate_graphs()
+})
 
 // get the data from the 'get.py' file and calculate and add some more entries
 // e.g. the percentage of CPU usage since the last received data from this
@@ -287,13 +319,15 @@ function displayset () {
 //   variable
 function update () {
     get(function (data) {
-        ds = dataset(data)
+        var ds = dataset(data)
         // add the current dataset to dataset history
         data_history.push(ds)
         // create new displayset object and update all of the fields with this
         // the displayset uses the global data_history variable
-        dps = displayset()
+        var dps = displayset()
+        display_history.push(dps)
         dps.update_fields()
+        update_graphs(graphs, display_history)
         // set timer for next update
         setTimeout(update, 500)
     })

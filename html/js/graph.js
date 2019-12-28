@@ -21,7 +21,7 @@ function graph (parent, max, min) {
                       ', min=' + min)
     // create new html object for the graph to reside in and tie it to the
     //   resulting object
-    htmlref = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+    var htmlref = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
     htmlref.setAttribute('class', 'graph_object')
     htmlref.style.width = '100%'
     htmlref.style.height = '100%'
@@ -58,13 +58,14 @@ function graph (parent, max, min) {
         // render the graph in the htmlref SVG object, using the entries stored
         //   in this object
         render: function () {
+            var w, h, d, htm, r, du
             w = $(this.htmlref).width()
             h = $(this.htmlref).height()
             d = 'M 0 ' + h + ' '
             d += 'L ' + (w - this.length() * this.entry_width) + ' ' + h + ' '
             // render lines
             htm = ''
-            for (i = 0; i < this.length(); i++)
+            for (var i = 0; i < this.length(); i++)
                 d += 'L ' + (w - this.entry_width * (this.length() - i - 1)) + 
                      ' ' + (h - (this.entries[i].value - min) / (max - min) * h) 
                      + ' '
@@ -75,7 +76,7 @@ function graph (parent, max, min) {
             r = this.style.linewidth * 0.5
             if (this.style.dots)
                 r *= 2
-            for (i = 0; i < this.length(); i++)
+            for (var i = 0; i < this.length(); i++)
                 htm += '<circle cx="' + (w - this.entry_width * (this.length() - 
                        i - 1)) + '" cy="' + (h - (this.entries[i].value - min) /
                        (max - min) * h) + '" r="' + r + '" style="fill: ' +
@@ -93,6 +94,47 @@ function graph (parent, max, min) {
         push: function (entry) {
             this.entries.push(entry)
         }
+    }
+}
+
+// find all html objects in the document with the attribute 'data-graph-out' and
+//   create a graph object associated with them, returns an array of these graph
+//   objects (with title-graph pairs as entries)
+function associate_graphs () {
+    var graphs = []
+    $('[data-graph-out]').each(function () {
+        var obj = $(this)
+        var attr = obj.attr('data-graph-out')
+        switch (attr) {
+            case 'cpu_usage_total':
+                graphs.push({
+                    title: 'cpu_usage_total',
+                    graph: graph(obj, 100, 0)
+                })
+                break
+            default:
+                console.error('graph type "' + attr + '" cannot be found')
+                break
+        }
+    })
+    return graphs
+}
+
+// update all graphs in the given array of title-graph pairs and the given
+//   display_history object
+function update_graphs (graphs, display_history) {
+    var g, title, entries
+    for (i = 0; i < graphs.length; i++) {
+        g = graphs[i].graph
+        title = graphs[i].title
+        entries = display_history.value_list(title)
+        // limit to rendering only the last 100 entries
+        while (entries.length > 100)
+            entries.shift()
+        for (var i = 0; i < entries.length; i++)
+            entries[i] = graphentry(entries[i])
+        g.entries = entries
+        g.render()
     }
 }
 
