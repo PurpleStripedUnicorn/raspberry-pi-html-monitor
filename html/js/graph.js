@@ -5,6 +5,15 @@ function graphentry (value) {
     return { value: value }
 }
 
+// graphmarker objects are used to store the location and text of a horizontal
+//   marker 
+function graphmarker (text, value) {
+    return {
+        text: text,
+        value: value
+    }
+}
+
 // create a graph object
 // inputs are the parent html object of the html part of this graph object and
 //   the minimum and maximum values of the graph (bottom and top resp.)
@@ -85,15 +94,35 @@ function graph (parent, max, min) {
             du = d + 'L ' + w + ' ' + h + ' Z'
             htm += '<path d="' + du + '" style="stroke: transparent; fill: ' +
                    this.style.undercolor + '" />'
+            // render horizontal markers
+            var hloc
+            for (var i = 0; i < this.markers.length; i++) {
+                // calculate the y location of the line
+                hloc = this.markers[i].value / max * h
+                // render the line
+                htm += '<path d="M 0 ' + hloc + ' L ' + w + ' ' + hloc +
+                       '" style="stroke: #ccc; fill: none; stroke-width: ' +
+                       (this.style.linewidth * 0.5) + '" />'
+                // render the text above the line
+                htm += '<text x="3" y="' + (hloc - this.style.linewidth * 0.5 - 
+                       3) + '" style="fill: #aaa; font-size: 12px; ' + 
+                       'font-family: sans-serif">' + 
+                       this.markers[i].text + '</text>'
+            }
             $(this.htmlref).html(htm)
             // apply styling settings
             this.htmlref.style.strokeWidth = '' + this.style.linewidth + 'px'
             this.htmlref.style.background = this.style.background
         },
         // add an entry to the list of entries
-        push: function (entry) {
-            this.entries.push(entry)
-        }
+        push: function (entry) { this.entries.push(entry) },
+        // list of horizontal markers to graph more readable, objects are of
+        //   type graphmarker
+        markers: [],
+        // add a marker to the list of markers for this graph
+        push_marker: function (marker) { this.markers.push(marker) },
+        // remove all markers of the current graph object
+        remove_markers: function () { this.markers = [] }
     }
 }
 
@@ -102,21 +131,29 @@ function graph (parent, max, min) {
 //   objects (with title-graph pairs as entries)
 function associate_graphs () {
     var graphs = []
+    var g
     $('[data-graph-out]').each(function () {
         var obj = $(this)
         var attr = obj.attr('data-graph-out')
         switch (attr) {
+            // cpu usage graph
             case 'cpu_usage_total':
+                g = graph(obj, 100, 0)
+                g.push_marker(graphmarker('25%', 25))
+                g.push_marker(graphmarker('50%', 50))
+                g.push_marker(graphmarker('75%', 75))
                 graphs.push({
                     title: 'cpu_usage_total',
-                    graph: graph(obj, 100, 0)
+                    graph: g
                 })
                 break
+            // if there is no support for the requested graph, throw an error
             default:
                 console.error('graph type "' + attr + '" cannot be found')
                 break
         }
     })
+    // return an array of the generated graphs, in the form of title-graph pairs
     return graphs
 }
 
