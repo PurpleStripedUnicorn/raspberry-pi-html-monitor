@@ -118,8 +118,9 @@ function graph (parent, max, min) {
                        ) * h
                 htm += '<text x="' + (w - 3) + '" y="' + (hloc -
                        this.style.linewidth - 3) + '" style="fill: ' + 
-                       this.style.linecolor + '; ' + 'font-size: 12px; ' + 
-                       'font-family: sans-serif" text-anchor="end">' + 
+                       this.style.linecolor + '; ' + 'font-size: 14px; ' + 
+                       'font-family: sans-serif; font-weight: bold" ' + 
+                       'text-anchor="end">' + 
                        this.entries[this.entries.length - 1].displayvalue(
                        this.entries[this.entries.length - 1].value) +
                        '</text>'
