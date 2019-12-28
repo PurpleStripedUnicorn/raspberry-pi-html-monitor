@@ -1,8 +1,10 @@
 
 // graphentry object
 // creates a new object representing an entry in a graph object
-function graphentry (value) {
-    return { value: value }
+function graphentry (value, displayvalue) {
+    if (typeof displayvalue == 'undefined')
+        displayvalue = function (x) { return x }
+    return { value: value, displayvalue: displayvalue }
 }
 
 // graphmarker objects are used to store the location and text of a horizontal
@@ -46,7 +48,8 @@ function graph (parent, max, min) {
             dots: false,
             linecolor: 'rgb(139, 140, 224)',
             undercolor: 'rgba(139, 140, 224, 0.3)',
-            background: '#f3f3f3'
+            background: '#f3f3f3',
+            value_text: false
         },
         // maximum value (top) of the graph
         max: max,
@@ -109,6 +112,19 @@ function graph (parent, max, min) {
                        'font-family: sans-serif">' + 
                        this.markers[i].text + '</text>'
             }
+            // render value display text, if it is enabled
+            if (this.style.value_text) {
+                hloc = (1 - this.entries[this.entries.length - 1].value / max
+                       ) * h
+                htm += '<text x="' + (w - 3) + '" y="' + (hloc -
+                       this.style.linewidth - 3) + '" style="fill: ' + 
+                       this.style.linecolor + '; ' + 'font-size: 12px; ' + 
+                       'font-family: sans-serif" text-anchor="end">' + 
+                       this.entries[this.entries.length - 1].displayvalue(
+                       this.entries[this.entries.length - 1].value) +
+                       '</text>'
+            }
+            // add generated html to the svg html element
             $(this.htmlref).html(htm)
             // apply styling settings
             this.htmlref.style.strokeWidth = '' + this.style.linewidth + 'px'

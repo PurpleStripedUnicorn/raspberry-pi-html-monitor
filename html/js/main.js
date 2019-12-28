@@ -360,6 +360,7 @@ function associate_graphs () {
             // cpu usage graph
             case 'cpu_usage_total':
                 g = graph(obj, 100, 0)
+                g.style.value_text = true
                 g.push_marker(graphmarker('25%', 25))
                 g.push_marker(graphmarker('50%', 50))
                 g.push_marker(graphmarker('75%', 75))
@@ -382,15 +383,18 @@ function associate_graphs () {
 //   display_history object
 function update_graphs (graphs, display_history) {
     var g, title, entries
-    for (i = 0; i < graphs.length; i++) {
+    for (var i = 0; i < graphs.length; i++) {
         g = graphs[i].graph
         title = graphs[i].title
         entries = display_history.value_list(title)
         // limit to rendering only the last 100 entries
         while (entries.length > 100)
             entries.shift()
-        for (var i = 0; i < entries.length; i++)
-            entries[i] = graphentry(entries[i])
+        for (var j = 0; j < entries.length; j++)
+            entries[j] = graphentry(
+                entries[j],
+                display_history.history[j].get(title).displayvalue
+            )
         g.entries = entries
         g.render()
     }
