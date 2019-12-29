@@ -55,14 +55,23 @@ function graph (parent, max, min) {
         // stores all of the entries of the graph, from left to right, in the 
         //   format of the graphentry object
         entries: [],
-        // amount of space to leave between entries in the graph (in px)
-        entry_width: 10,
         style: { // default values
+            // amount of space to leave between entries in the graph (in px)
+            entry_width: 10,
+            // width of the graph's line
             linewidth: 3,
+            // a small dot (twice the size of the line) on every entry value in
+            //   the graph
             dots: false,
+            // color of the line
             linecolor: 'rgb(139, 140, 224)',
+            // color of the area under the line ('transparent' will show
+            //   nothing)
             undercolor: 'rgba(139, 140, 224, 0.3)',
+            // background color of the graph
             background: '#f3f3f3',
+            // text with the last entry's value on the right just above the
+            //   line of the graph
             value_text: false
         },
         // maximum value (top) of the graph
@@ -89,7 +98,8 @@ function graph (parent, max, min) {
         render_lines: function () {
             var w = this.width(), h = this.height()
             var d = 'M 0 ' + h + ' '
-            d += 'L ' + (w - this.length() * this.entry_width) + ' ' + h + ' '
+            d += 'L ' + (w - this.length() * this.style.entry_width) + ' ' + h
+                + ' '
             var htm = ''
             // radius of the circle depends on if the style.dots is enabled
             var r = this.style.linewidth * 0.5
@@ -97,14 +107,15 @@ function graph (parent, max, min) {
                 r *= 2
             for (var i = 0; i < this.length(); i++) {
                 // calculate the path for the actual lines
-                d += 'L ' + (w - this.entry_width * (this.length() - i - 1))
-                    + ' ' + (h - (this.entries[i].value - this.min) / (this.max
-                    - this.min) * h) + ' '
+                d += 'L ' + (w - this.style.entry_width * (this.length() - i
+                    - 1)) + ' ' + (h - (this.entries[i].value - this.min)
+                    / (this.max - this.min) * h) + ' '
                 // render new circle in the location of the point
-                htm += '<circle cx="' + (w - this.entry_width * (this.length()
-                    - i - 1)) + '" cy="' + (h - (this.entries[i].value
-                    - this.min) / (this.max - this.min) * h) + '" r="' + r
-                    + '" style="fill: ' + this.style.linecolor + '" />'
+                htm += '<circle cx="' + (w - this.style.entry_width
+                    * (this.length() - i - 1)) + '" cy="' + (h 
+                    - (this.entries[i].value - this.min) / (this.max - this.min)
+                    * h) + '" r="' + r + '" style="fill: '
+                    + this.style.linecolor + '" />'
             }
             // add the path to the html
             htm += '<path d="' + d + '" style="stroke: ' + this.style.linecolor
@@ -118,12 +129,12 @@ function graph (parent, max, min) {
         render_lines_under: function () {
             var w = this.width(), h = this.height()
             var d = 'M 0 ' + h + ' ' + 'L ' + (w - this.length()
-                * this.entry_width) + ' ' + h + ' '
+                * this.style.entry_width) + ' ' + h + ' '
             // calculate the path part which is the same as for the lines
             for (var i = 0; i < this.length(); i++) {
-                d += 'L ' + (w - this.entry_width * (this.length() - i - 1))
-                    + ' ' + (h - (this.entries[i].value - this.min) / (this.max
-                        - this.min) * h) + ' '
+                d += 'L ' + (w - this.style.entry_width * (this.length() - i
+                    - 1)) + ' ' + (h - (this.entries[i].value - this.min)
+                    / (this.max - this.min) * h) + ' '
             }
             // add the right and bottom lines to make it a full shape
             d += 'L ' + w + ' ' + h + ' Z'
