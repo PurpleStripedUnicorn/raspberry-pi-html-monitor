@@ -1,4 +1,6 @@
 
+'use strict'
+
 // graphentry object
 // creates a new object representing an entry in a graph object
 function graphentry (value, displayvalue) {
@@ -87,7 +89,7 @@ function graph (parent, max, min) {
             d += 'L ' + (w - this.length() * this.entry_width) + ' ' + h + ' '
             var htm = ''
             // radius of the circle depends on if the style.dots is enabled
-            r = this.style.linewidth * 0.5
+            var r = this.style.linewidth * 0.5
             if (this.style.dots)
                 r *= 2
             for (var i = 0; i < this.length(); i++) {
@@ -154,8 +156,8 @@ function graph (parent, max, min) {
             if (!this.style.value_text)
                 return
             var hloc = (1 - this.entries[this.entries.length - 1].value
-                / this.max) * h
-            var htm = '<text x="' + (w - 3) + '" y="' + (hloc
+                / this.max) * this.height()
+            var htm = '<text x="' + (this.width() - 3) + '" y="' + (hloc
                 - this.style.linewidth - 3) + '" style="fill: '
                 + this.style.linecolor + '; ' + 'font-size: 14px; '
                 + 'font-family: sans-serif; font-weight: bold" '
@@ -168,8 +170,6 @@ function graph (parent, max, min) {
         // render the graph in the htmlref SVG object, using the entries stored
         //   in this object
         render: function () {
-            w = $(this.htmlref).width()
-            h = $(this.htmlref).height()
             this.render_lines()
             this.render_lines_under()
             this.render_markers()
