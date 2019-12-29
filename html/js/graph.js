@@ -73,7 +73,9 @@ function graph (parent, max, min) {
             background: '#f3f3f3',
             // text with the last entry's value on the right just above the
             //   line of the graph
-            value_text: false
+            value_text: false,
+            // font for the text inside the graphic
+            fontFamily: 'sans-serif'
         },
         // maximum value (top) of the graph
         max: max,
@@ -159,8 +161,7 @@ function graph (parent, max, min) {
                     (this.style.linewidth * 0.5) + '" />'
                 // render the text above the line
                 htm += '<text x="3" y="' + (hloc - this.style.linewidth * 0.5 -
-                    3) + '" style="fill: #aaa; font-size: 12px; ' +
-                    'font-family: sans-serif">' +
+                    3) + '" style="fill: #aaa; font-size: 12px">' +
                     this.markers[i].text + '</text>'
             }
             // add generated html to the svg html element
@@ -175,8 +176,7 @@ function graph (parent, max, min) {
             var htm = '<text x="' + (this.width() - 3) + '" y="' + (hloc
                 - this.style.linewidth - 3) + '" style="fill: '
                 + this.style.linecolor + '; ' + 'font-size: 14px; '
-                + 'font-family: sans-serif; font-weight: bold" '
-                + 'text-anchor="end">'
+                + 'font-weight: bold" text-anchor="end">'
                 + this.entries[this.entries.length - 1].displayvalue(
                     this.entries[this.entries.length - 1].value)
                 + '</text>'
@@ -192,6 +192,7 @@ function graph (parent, max, min) {
             // apply styling settings
             this.htmlref.style.strokeWidth = '' + this.style.linewidth + 'px'
             this.htmlref.style.background = this.style.background
+            this.htmlref.style.fontFamily = this.style.fontFamily
         },
         // add an entry to the list of entries
         push: function (entry) { this.entries.push(entry) },
