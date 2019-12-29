@@ -43,8 +43,8 @@ function build_blocks () {
     // this variable contains all of the blocks that will be used
     blocks = [
         block('CPU usage', 'cpu_usage_total', true),
-        block('RAM available', 'ram_available'),
-        block('CPU temperature', 'temp_cpu'),
+        block('RAM usage', 'ram_used', true),
+        block('CPU temperature', 'temp_cpu', true),
         block('Rasberry Pi model', 'model'),
         block('Disk space free', 'disk_space_free'),
         block('Connection type', 'connection_type'),

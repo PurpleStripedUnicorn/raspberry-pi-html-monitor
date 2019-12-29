@@ -217,7 +217,17 @@ function displayset () {
     data.push({
         title: 'ram_used',
         value: cur.get('ram_used').value,
-        displayvalue: function () { return units(this.value, 'B') }
+        displayvalue: function () { return units(this.value, 'B') },
+        graph: function (parent) {
+            var total = display_history.history[0].get('ram_total').value
+            var g = graph(parent, total)
+            g.style.value_text = true
+            g.style.fontFamily = 'inherit'
+            g.push_marker(graphmarker(units(total / 4, 'B'), total / 4))
+            g.push_marker(graphmarker(units(total / 2, 'B'), total / 2))
+            g.push_marker(graphmarker(units(total / 4 * 3, 'B'), total / 4 * 3))
+            return g
+        }
     })
     data.push({
         title: 'ram_free',
