@@ -369,6 +369,19 @@ function associate_graphs () {
                     graph: g
                 })
                 break
+            // cpu temperature graph
+            case 'temp_cpu':
+                g = graph(obj, 100, 0)
+                g.style.value_text = true
+                g.push_marker(graphmarker('20°C', 20))
+                g.push_marker(graphmarker('40°C', 40))
+                g.push_marker(graphmarker('60°C', 60))
+                g.push_marker(graphmarker('80°C', 80))
+                graphs.push({
+                    title: 'temp_cpu',
+                    graph: g
+                })
+                break
             // if there is no support for the requested graph, throw an error
             default:
                 console.error('graph type "' + attr + '" cannot be found')
