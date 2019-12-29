@@ -185,7 +185,15 @@ function displayset () {
     tmp = {
         title: 'cpu_usage_total',
         value: 0,
-        displayvalue: function () { return units(this.value, '%', 0) }
+        displayvalue: function () { return units(this.value, '%', 0) },
+        graph: function (parent) {
+            g = graph(parent, 100)
+            g.style.value_text = true
+            g.push_marker(graphmarker('25%', 25))
+            g.push_marker(graphmarker('50%', 50))
+            g.push_marker(graphmarker('75%', 75))
+            return g
+        }
     }
     if (has_last) {
         time_diff = cur.get('timestamp').value - last.get('timestamp').value
@@ -256,7 +264,16 @@ function displayset () {
     data.push({
         title: 'temp_cpu',
         value: cur.get('temp_cpu').value,
-        displayvalue: function () { return units(this.value, '°C', 1) }
+        displayvalue: function () { return units(this.value, '°C', 1) },
+        graph: function (parent) {
+            g = graph(parent, 100)
+            g.style.value_text = true
+            g.push_marker(graphmarker('20°C', 20))
+            g.push_marker(graphmarker('40°C', 40))
+            g.push_marker(graphmarker('60°C', 60))
+            g.push_marker(graphmarker('80°C', 80))
+            return g
+        }
     })
     // Raspberry Pi model
     data.push({
@@ -311,12 +328,7 @@ function displayset () {
 }
 
 // make the graphs variable global so it cn be used inside the update function
-graphs = []
-// as soon as the document is loaded, fill the graphs variable by using the
-//   associate_graphs function
-$(function () {
-    graphs = associate_graphs()
-})
+graphs = null
 
 // get the data from the 'get.py' file and calculate and add some more entries
 // e.g. the percentage of CPU usage since the last received data from this
@@ -333,6 +345,10 @@ function update () {
         var dps = displayset()
         display_history.push(dps)
         dps.update_fields()
+        // if the graphs have not been associated with their respective html
+        //   elements, associate them before updating these graphs
+        if (graphs == null)
+            graphs = associate_graphs()
         update_graphs(graphs, display_history)
         // set timer for next update
         setTimeout(update, 500)
@@ -352,41 +368,15 @@ function update_field (obj, dps) {
 //   objects (with title-graph pairs as entries)
 function associate_graphs () {
     var graphs = []
-    var g
+    var g, obj, attr
     $('[data-graph-out]').each(function () {
-        var obj = $(this)
-        var attr = obj.attr('data-graph-out')
-        switch (attr) {
-            // cpu usage graph
-            case 'cpu_usage_total':
-                g = graph(obj, 100, 0)
-                g.style.value_text = true
-                g.push_marker(graphmarker('25%', 25))
-                g.push_marker(graphmarker('50%', 50))
-                g.push_marker(graphmarker('75%', 75))
-                graphs.push({
-                    title: 'cpu_usage_total',
-                    graph: g
-                })
-                break
-            // cpu temperature graph
-            case 'temp_cpu':
-                g = graph(obj, 100, 0)
-                g.style.value_text = true
-                g.push_marker(graphmarker('20°C', 20))
-                g.push_marker(graphmarker('40°C', 40))
-                g.push_marker(graphmarker('60°C', 60))
-                g.push_marker(graphmarker('80°C', 80))
-                graphs.push({
-                    title: 'temp_cpu',
-                    graph: g
-                })
-                break
-            // if there is no support for the requested graph, throw an error
-            default:
-                console.error('graph type "' + attr + '" cannot be found')
-                break
-        }
+        obj = $(this)
+        attr = obj.attr('data-graph-out')
+        g = display_history.history[0].get(attr).graph(obj)
+        graphs.push({
+            title: attr,
+            graph: g
+        })
     })
     // return an array of the generated graphs, in the form of title-graph pairs
     return graphs
