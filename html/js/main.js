@@ -189,6 +189,7 @@ function displayset () {
         graph: function (parent) {
             g = graph(parent, 100)
             g.style.value_text = true
+            g.style.fontFamily = 'inherit'
             g.push_marker(graphmarker('25%', 25))
             g.push_marker(graphmarker('50%', 50))
             g.push_marker(graphmarker('75%', 75))
@@ -268,6 +269,7 @@ function displayset () {
         graph: function (parent) {
             g = graph(parent, 100)
             g.style.value_text = true
+            g.style.fontFamily = 'inherit'
             g.push_marker(graphmarker('20°C', 20))
             g.push_marker(graphmarker('40°C', 40))
             g.push_marker(graphmarker('60°C', 60))
@@ -373,6 +375,8 @@ function associate_graphs () {
         obj = $(this)
         attr = obj.attr('data-graph-out')
         g = display_history.history[0].get(attr).graph(obj)
+        // render for the first time so markers are also properly displayed
+        g.render()
         graphs.push({
             title: attr,
             graph: g
@@ -399,6 +403,10 @@ function update_graphs (graphs, display_history) {
                 display_history.history[j].get(title).displayvalue
             )
         g.entries = entries
-        g.render()
+        // do not fully re-render since markers don't change
+        g.render_lines()
+        g.render_lines_under()
+        g.render_value_display()
+        g.render_styles()
     }
 }
