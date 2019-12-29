@@ -169,7 +169,7 @@ function graph (parent, max, min) {
         },
         // render the value display text above the line (if it is enabled)
         render_value_display: function () {
-            if (!this.style.value_text)
+            if (!this.style.value_text || this.entries.length < 1)
                 return
             var hloc = (1 - this.entries[this.entries.length - 1].value
                 / this.max) * this.height()
@@ -182,6 +182,12 @@ function graph (parent, max, min) {
                 + '</text>'
             $(this.htmlref).find('.graph_value_display').html(htm)
         },
+        // apply all styling settings
+        render_styles: function () {
+            this.htmlref.style.strokeWidth = '' + this.style.linewidth + 'px'
+            this.htmlref.style.background = this.style.background
+            this.htmlref.style.fontFamily = this.style.fontFamily
+        },
         // render the graph in the htmlref SVG object, using the entries stored
         //   in this object
         render: function () {
@@ -190,9 +196,7 @@ function graph (parent, max, min) {
             this.render_markers()
             this.render_value_display()
             // apply styling settings
-            this.htmlref.style.strokeWidth = '' + this.style.linewidth + 'px'
-            this.htmlref.style.background = this.style.background
-            this.htmlref.style.fontFamily = this.style.fontFamily
+            this.render_styles()
         },
         // add an entry to the list of entries
         push: function (entry) { this.entries.push(entry) },
