@@ -37,6 +37,15 @@ function graph (parent, max, min) {
     htmlref.style.width = '100%'
     htmlref.style.height = '100%'
     parent.append(htmlref)
+    // add groups for different parts of the graph
+    var classes = ['graph_lines', 'graph_lines_under', 'graph_markers', 
+        'graph_value_display']
+    var classref
+    for (var i = 0; i < classes.length; i++) {
+        classref = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+        classref.setAttribute('class', classes[i])
+        htmlref.appendChild(classref)
+    }
     return {
         // stores all of the entries of the graph, from left to right, in the 
         //   format of the graphentry object
@@ -67,66 +76,104 @@ function graph (parent, max, min) {
             else
                 return this.entries[n]
         },
-        // render the graph in the htmlref SVG object, using the entries stored
-        //   in this object
-        render: function () {
-            var w, h, d, htm, r, du
-            w = $(this.htmlref).width()
-            h = $(this.htmlref).height()
-            d = 'M 0 ' + h + ' '
+        // get the width or height of the html object of the graph (in px)
+        width: function () { return $(this.htmlref).width() },
+        height: function () { return $(this.htmlref).height() },
+        // render the lines of the graph, smoothing them with circles, these are
+        //   also rendered in this function
+        render_lines: function () {
+            var w = this.width(), h = this.height()
+            var d = 'M 0 ' + h + ' '
             d += 'L ' + (w - this.length() * this.entry_width) + ' ' + h + ' '
-            // render lines
-            htm = ''
-            for (var i = 0; i < this.length(); i++)
-                d += 'L ' + (w - this.entry_width * (this.length() - i - 1)) + 
-                     ' ' + (h - (this.entries[i].value - min) / (max - min) * h) 
-                     + ' '
-            htm += '<path d="' + d + '" style="stroke: ' + this.style.linecolor
-                   + '; stroke-width: ' + this.style.linewidth 
-                   + '; fill: none" />'
-            // render circles to make lines smoother
+            var htm = ''
+            // radius of the circle depends on if the style.dots is enabled
             r = this.style.linewidth * 0.5
             if (this.style.dots)
                 r *= 2
-            for (var i = 0; i < this.length(); i++)
-                htm += '<circle cx="' + (w - this.entry_width * (this.length() - 
-                       i - 1)) + '" cy="' + (h - (this.entries[i].value - min) /
-                       (max - min) * h) + '" r="' + r + '" style="fill: ' +
-                       this.style.linecolor + '" />'
-            // render color under the graph line
-            du = d + 'L ' + w + ' ' + h + ' Z'
-            htm += '<path d="' + du + '" style="stroke: transparent; fill: ' +
-                   this.style.undercolor + '" />'
-            // render horizontal markers
+            for (var i = 0; i < this.length(); i++) {
+                // calculate the path for the actual lines
+                d += 'L ' + (w - this.entry_width * (this.length() - i - 1))
+                    + ' ' + (h - (this.entries[i].value - this.min) / (this.max
+                    - this.min) * h) + ' '
+                // render new circle in the location of the point
+                htm += '<circle cx="' + (w - this.entry_width * (this.length()
+                    - i - 1)) + '" cy="' + (h - (this.entries[i].value
+                    - this.min) / (this.max - this.min) * h) + '" r="' + r
+                    + '" style="fill: ' + this.style.linecolor + '" />'
+            }
+            // add the path to the html
+            htm += '<path d="' + d + '" style="stroke: ' + this.style.linecolor
+                + '; stroke-width: ' + this.style.linewidth
+                + '; fill: none" />'
+            // replace html of the lines part of the svg
+            $(this.htmlref).find('.graph_lines').html(htm)
+        },
+        // render the color under the graph line (can be transparent but will
+        //   still be calculated and rendered)
+        render_lines_under: function () {
+            var w = this.width(), h = this.height()
+            var d = 'M 0 ' + h + ' ' + 'L ' + (w - this.length()
+                * this.entry_width) + ' ' + h + ' '
+            // calculate the path part which is the same as for the lines
+            for (var i = 0; i < this.length(); i++) {
+                d += 'L ' + (w - this.entry_width * (this.length() - i - 1))
+                    + ' ' + (h - (this.entries[i].value - this.min) / (this.max
+                        - this.min) * h) + ' '
+            }
+            // add the right and bottom lines to make it a full shape
+            d += 'L ' + w + ' ' + h + ' Z'
+            var htm = '<path d="' + d + '" style="stroke: transparent; fill: ' +
+                this.style.undercolor + '" />'
+            // replace html of the lines part of the svg
+            $(this.htmlref).find('.graph_lines_under').html(htm)
+        },
+        // render the markers, which are horizontal lines indicating certain
+        //   values, this includes the text above the lines
+        render_markers: function () {
+            var w = this.width(), h = this.height()
             var hloc
+            var htm = ''
             for (var i = 0; i < this.markers.length; i++) {
                 // calculate the y location of the line
-                hloc = (1 - this.markers[i].value / max) * h
+                hloc = (1 - this.markers[i].value / this.max) * h
                 // render the line
                 htm += '<path d="M 0 ' + hloc + ' L ' + w + ' ' + hloc +
-                       '" style="stroke: #ccc; fill: none; stroke-width: ' +
-                       (this.style.linewidth * 0.5) + '" />'
+                    '" style="stroke: #ccc; fill: none; stroke-width: ' +
+                    (this.style.linewidth * 0.5) + '" />'
                 // render the text above the line
-                htm += '<text x="3" y="' + (hloc - this.style.linewidth * 0.5 - 
-                       3) + '" style="fill: #aaa; font-size: 12px; ' + 
-                       'font-family: sans-serif">' + 
-                       this.markers[i].text + '</text>'
-            }
-            // render value display text, if it is enabled
-            if (this.style.value_text) {
-                hloc = (1 - this.entries[this.entries.length - 1].value / max
-                       ) * h
-                htm += '<text x="' + (w - 3) + '" y="' + (hloc -
-                       this.style.linewidth - 3) + '" style="fill: ' + 
-                       this.style.linecolor + '; ' + 'font-size: 14px; ' + 
-                       'font-family: sans-serif; font-weight: bold" ' + 
-                       'text-anchor="end">' + 
-                       this.entries[this.entries.length - 1].displayvalue(
-                       this.entries[this.entries.length - 1].value) +
-                       '</text>'
+                htm += '<text x="3" y="' + (hloc - this.style.linewidth * 0.5 -
+                    3) + '" style="fill: #aaa; font-size: 12px; ' +
+                    'font-family: sans-serif">' +
+                    this.markers[i].text + '</text>'
             }
             // add generated html to the svg html element
-            $(this.htmlref).html(htm)
+            $(this.htmlref).find('.graph_markers').html(htm)
+        },
+        // render the value display text above the line (if it is enabled)
+        render_value_display: function () {
+            if (!this.style.value_text)
+                return
+            var hloc = (1 - this.entries[this.entries.length - 1].value
+                / this.max) * h
+            var htm = '<text x="' + (w - 3) + '" y="' + (hloc
+                - this.style.linewidth - 3) + '" style="fill: '
+                + this.style.linecolor + '; ' + 'font-size: 14px; '
+                + 'font-family: sans-serif; font-weight: bold" '
+                + 'text-anchor="end">'
+                + this.entries[this.entries.length - 1].displayvalue(
+                    this.entries[this.entries.length - 1].value)
+                + '</text>'
+            $(this.htmlref).find('.graph_value_display').html(htm)
+        },
+        // render the graph in the htmlref SVG object, using the entries stored
+        //   in this object
+        render: function () {
+            w = $(this.htmlref).width()
+            h = $(this.htmlref).height()
+            this.render_lines()
+            this.render_lines_under()
+            this.render_markers()
+            this.render_value_display()
             // apply styling settings
             this.htmlref.style.strokeWidth = '' + this.style.linewidth + 'px'
             this.htmlref.style.background = this.style.background
