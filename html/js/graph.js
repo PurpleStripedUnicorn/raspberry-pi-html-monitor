@@ -6,7 +6,10 @@
 function graphentry (value, displayvalue) {
     if (typeof displayvalue == 'undefined')
         displayvalue = function (x) { return x }
-    return { value: value, displayvalue: displayvalue }
+    return {
+        value: value,
+        displayvalue: displayvalue
+    }
 }
 
 // graphmarker objects are used to store the location and text of a horizontal
@@ -31,7 +34,7 @@ function graph (parent, max, min) {
     // quick check to see max and min values are actually valid
     if (!(max > min))
         console.error('maximum and minimum values are invalid: max=' + max +
-                      ', min=' + min)
+            ', min=' + min)
     // create new html object for the graph to reside in and tie it to the
     //   resulting object
     var htmlref = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
