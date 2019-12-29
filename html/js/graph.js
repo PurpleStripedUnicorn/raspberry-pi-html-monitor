@@ -43,8 +43,9 @@ function graph (parent, max, min) {
     htmlref.style.height = '100%'
     parent.append(htmlref)
     // add groups for different parts of the graph
-    var classes = ['graph_lines', 'graph_lines_under', 'graph_markers', 
-        'graph_value_display']
+    // the order in which they are listed is also the order in the HTML DOM tree
+    var classes = ['graph_markers', 'graph_value_display',
+        'graph_lines_under', 'graph_lines']
     var classref
     for (var i = 0; i < classes.length; i++) {
         classref = document.createElementNS('http://www.w3.org/2000/svg', 'g')
