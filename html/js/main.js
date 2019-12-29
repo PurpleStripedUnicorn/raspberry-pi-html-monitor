@@ -375,8 +375,6 @@ function associate_graphs () {
         obj = $(this)
         attr = obj.attr('data-graph-out')
         g = display_history.history[0].get(attr).graph(obj)
-        // render for the first time so markers are also properly displayed
-        g.render()
         graphs.push({
             title: attr,
             graph: g
@@ -404,9 +402,6 @@ function update_graphs (graphs, display_history) {
             )
         g.entries = entries
         // do not fully re-render since markers don't change
-        g.render_lines()
-        g.render_lines_under()
-        g.render_value_display()
-        g.render_styles()
+        g.render()
     }
 }
