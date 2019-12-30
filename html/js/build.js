@@ -1,4 +1,6 @@
 
+'use strict'
+
 // get a 'block' object returned from the information provided
 // this is mainly to make including the html for a block easier
 function block (title, statname, has_graph) {
@@ -39,9 +41,9 @@ function block (title, statname, has_graph) {
 // build the 'blocks' part of the page
 // these display all of the statistics and metrics of the pi
 function build_blocks () {
-    container = $('.blocks_container')
+    var container = $('.blocks_container')
     // this variable contains all of the blocks that will be used
-    blocks = [
+    var blocks = [
         block('CPU usage', 'cpu_usage_total', true),
         block('RAM usage', 'ram_used', true),
         block('CPU temperature', 'temp_cpu', true),
@@ -51,7 +53,7 @@ function build_blocks () {
         block('Time since last boot', 'time_boot_ago'),
         block('Update frequency', 'update_freq', true)
     ]
-    for (i = 0; i < blocks.length; i++)
+    for (var i = 0; i < blocks.length; i++)
         container.append(blocks[i].html())
 }
 
@@ -61,7 +63,7 @@ function top_bar_item (text, action) {
         text: text,
         action: action,
         dom: function () {
-            obj = document.createElement('div')
+            var obj = document.createElement('div')
             obj.onclick = action
             obj.setAttribute('class', 'item')
             obj.innerText = text

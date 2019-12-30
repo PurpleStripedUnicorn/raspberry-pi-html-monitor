@@ -1,4 +1,6 @@
 
+'use strict'
+
 // check if a string is numeric
 function isNumeric (n) {
     return !isNaN(parseFloat(n)) && isFinite(n)
@@ -61,7 +63,7 @@ function units_time (n) {
 }
 
 // this variable stores the history of received data via the 'update' function
-data_history = {
+var data_history = {
     // where the actual history of data is stored
     history: [],
     // get the last received data, if a number is given, the nth last entry is
@@ -79,7 +81,7 @@ data_history = {
 
 // this variable stores the history of received data via the 'displayset'
 //   function
-display_history = {
+var display_history = {
     // where the actual history is stored
     history: [],
     // append a new displayset to the history
@@ -87,7 +89,7 @@ display_history = {
     length: function () { return this.history.length },
     // return an array of values from the given datapoint title
     value_list: function (title) {
-        values = []
+        var values = []
         for (var i = 0; i < this.history.length; i++)
             values.push(this.history[i].get(title).value)
         return values
@@ -187,7 +189,7 @@ function displayset () {
         value: 0,
         displayvalue: function () { return units(this.value, '%', 0) },
         graph: function (parent) {
-            g = graph(parent, 100)
+            var g = graph(parent, 100)
             g.style.value_text = true
             g.style.fontFamily = 'inherit'
             g.push_marker(graphmarker('25%', 25))
@@ -209,7 +211,7 @@ function displayset () {
         value: 0,
         displayvalue: function () { return units(this.value, 's') },
         graph: function (parent) {
-            g = graph(parent, 2)
+            var g = graph(parent, 2)
             g.style.value_text = true
             g.style.fontFamily = 'inherit'
             g.push_marker(graphmarker('500ms', 0.5))
@@ -295,7 +297,7 @@ function displayset () {
         value: cur.get('temp_cpu').value,
         displayvalue: function () { return units(this.value, '°C', 1) },
         graph: function (parent) {
-            g = graph(parent, 100)
+            var g = graph(parent, 100)
             g.style.value_text = true
             g.style.fontFamily = 'inherit'
             g.push_marker(graphmarker('20°C', 20))
@@ -358,7 +360,7 @@ function displayset () {
 }
 
 // make the graphs variable global so it cn be used inside the update function
-graphs = null
+var graphs = null
 
 // get the data from the 'get.py' file and calculate and add some more entries
 // e.g. the percentage of CPU usage since the last received data from this
