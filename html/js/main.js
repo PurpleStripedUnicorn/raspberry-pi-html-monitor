@@ -1,4 +1,6 @@
 
+'use strict'
+
 // check if a string is numeric
 function isNumeric (n) {
     return !isNaN(parseFloat(n)) && isFinite(n)
@@ -61,7 +63,7 @@ function units_time (n) {
 }
 
 // this variable stores the history of received data via the 'update' function
-data_history = {
+var data_history = {
     // where the actual history of data is stored
     history: [],
     // get the last received data, if a number is given, the nth last entry is
@@ -79,7 +81,7 @@ data_history = {
 
 // this variable stores the history of received data via the 'displayset'
 //   function
-display_history = {
+var display_history = {
     // where the actual history is stored
     history: [],
     // append a new displayset to the history
@@ -87,7 +89,7 @@ display_history = {
     length: function () { return this.history.length },
     // return an array of values from the given datapoint title
     value_list: function (title) {
-        values = []
+        var values = []
         for (var i = 0; i < this.history.length; i++)
             values.push(this.history[i].get(title).value)
         return values
@@ -187,7 +189,7 @@ function displayset () {
         value: 0,
         displayvalue: function () { return units(this.value, '%', 0) },
         graph: function (parent) {
-            g = graph(parent, 100)
+            var g = graph(parent, 100)
             g.style.value_text = true
             g.style.fontFamily = 'inherit'
             g.push_marker(graphmarker('25%', 25))
@@ -202,6 +204,24 @@ function displayset () {
             last.get('cpu_times_total').value
         tmp.value = cpu_diff / time_diff * 100 // 100 is for percentage
     }
+    data.push(tmp)
+    // calculate update frequency (if there have been at least 2 measurements)
+    tmp = {
+        title: 'update_freq',
+        value: 0,
+        displayvalue: function () { return units(this.value, 's') },
+        graph: function (parent) {
+            var g = graph(parent, 2)
+            g.style.value_text = true
+            g.style.fontFamily = 'inherit'
+            g.push_marker(graphmarker('500ms', 0.5))
+            g.push_marker(graphmarker('1000ms', 1))
+            g.push_marker(graphmarker('1500ms', 1.5))
+            return g
+        }
+    }
+    if (has_last)
+        tmp.value = cur.get('timestamp').value - last.get('timestamp').value
     data.push(tmp)
     // RAM availability/usage
     data.push({
@@ -277,7 +297,7 @@ function displayset () {
         value: cur.get('temp_cpu').value,
         displayvalue: function () { return units(this.value, '°C', 1) },
         graph: function (parent) {
-            g = graph(parent, 100)
+            var g = graph(parent, 100)
             g.style.value_text = true
             g.style.fontFamily = 'inherit'
             g.push_marker(graphmarker('20°C', 20))
@@ -340,7 +360,7 @@ function displayset () {
 }
 
 // make the graphs variable global so it cn be used inside the update function
-graphs = null
+var graphs = null
 
 // get the data from the 'get.py' file and calculate and add some more entries
 // e.g. the percentage of CPU usage since the last received data from this
@@ -411,7 +431,6 @@ function update_graphs (graphs, display_history) {
                 display_history.history[j].get(title).displayvalue
             )
         g.entries = entries
-        // do not fully re-render since markers don't change
         g.render()
     }
 }
