@@ -77,11 +77,20 @@ function build_top_bar () {
     var items = [
         top_bar_item('Graphs', function () {
             $('.blocks_container').toggleClass('graphs_visible')
+            // re-render the graphs because width/height changed
+            for (var i = 0; i < graphs.length; i++)
+                graphs[i].graph.render()
         })
     ]
     for (var i = 0; i < items.length; i++)
         container.append(items[i].dom())
 }
+
+// re-render all of the graphs when the width or height of the windows changes
+$(window).on('resize', function () {
+    for (var i = 0; i < graphs.length; i++)
+        graphs[i].graph.render()
+})
 
 build_blocks()
 build_top_bar()
