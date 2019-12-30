@@ -203,6 +203,24 @@ function displayset () {
         tmp.value = cpu_diff / time_diff * 100 // 100 is for percentage
     }
     data.push(tmp)
+    // calculate update frequency (if there have been at least 2 measurements)
+    tmp = {
+        title: 'update_freq',
+        value: 0,
+        displayvalue: function () { return units(this.value, 's') },
+        graph: function (parent) {
+            g = graph(parent, 2)
+            g.style.value_text = true
+            g.style.fontFamily = 'inherit'
+            g.push_marker(graphmarker('500ms', 0.5))
+            g.push_marker(graphmarker('1000ms', 1))
+            g.push_marker(graphmarker('1500ms', 1.5))
+            return g
+        }
+    }
+    if (has_last)
+        tmp.value = cur.get('timestamp').value - last.get('timestamp').value
+    data.push(tmp)
     // RAM availability/usage
     data.push({
         title: 'ram_total',
