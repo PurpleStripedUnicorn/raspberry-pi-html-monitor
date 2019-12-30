@@ -429,7 +429,6 @@ function update_graphs (graphs, display_history) {
                 display_history.history[j].get(title).displayvalue
             )
         g.entries = entries
-        // do not fully re-render since markers don't change
         g.render()
     }
 }
